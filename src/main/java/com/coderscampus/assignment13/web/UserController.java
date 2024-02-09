@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.coderscampus.assignment13.domain.Address;
 import com.coderscampus.assignment13.domain.User;
 import com.coderscampus.assignment13.service.UserService;
 
@@ -64,5 +65,11 @@ public class UserController {
 	public String deleteOneUser (@PathVariable Long userId) {
 		userService.delete(userId);
 		return "redirect:/users";
+	}
+	
+	@PostMapping("/users/{userId}/updateAddress")
+	public String updateAddress(@PathVariable Long userId, Address address) {
+		userService.updateAddress(userId, address);
+		return "redirect:/users/" + userId;
 	}
 }

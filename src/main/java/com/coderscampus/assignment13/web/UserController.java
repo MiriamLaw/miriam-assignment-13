@@ -1,6 +1,7 @@
 package com.coderscampus.assignment13.web;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,57 +17,63 @@ import com.coderscampus.assignment13.service.UserService;
 
 @Controller
 public class UserController {
-	
+
 	@Autowired
 	private UserService userService;
-	
+
 	@GetMapping("/register")
-	public String getCreateUser (ModelMap model) {
-		
+	public String getCreateUser(ModelMap model) {
+
 		model.put("user", new User());
-		
+
 		return "register";
 	}
-	
+
 	@PostMapping("/register")
-	public String postCreateUser (User user) {
+	public String postCreateUser(User user) {
 		System.out.println(user);
 		userService.saveUser(user);
 		return "redirect:/register";
 	}
-	
+
 	@GetMapping("/users")
-	public String getAllUsers (ModelMap model) {
+	public String getAllUsers(ModelMap model) {
 		Set<User> users = userService.findAll();
-		
+
 		model.put("users", users);
 		if (users.size() == 1) {
 			model.put("user", users.iterator().next());
 		}
-		
+
 		return "users";
 	}
-	
+
 	@GetMapping("/users/{userId}")
-	public String getOneUser (ModelMap model, @PathVariable Long userId) {
-		User user = userService.findById(userId);
-		model.put("users", Arrays.asList(user));
-		model.put("user", user);
-		return "users";
+	public String getOneUser(ModelMap model, @PathVariable Long userId) {
+		Optional<User> userOpt = userService.findById(userId);
+		if (userOpt.isPresent()) {
+			User user = userOpt.get();
+			model.put("users", Arrays.asList(user));
+			model.put("user", user);
+			return "users";
+		} else {
+			model.put("errorMessage", "User not found");
+			return "redirect:/users";
+		}
 	}
-	
+
 	@PostMapping("/users/{userId}")
-	public String postOneUser (User user) {
+	public String postOneUser(User user) {
 		userService.saveUser(user);
-		return "redirect:/users/"+user.getUserId();
+		return "redirect:/users/" + user.getUserId();
 	}
-	
+
 	@PostMapping("/users/{userId}/delete")
-	public String deleteOneUser (@PathVariable Long userId) {
+	public String deleteOneUser(@PathVariable Long userId) {
 		userService.delete(userId);
 		return "redirect:/users";
 	}
-	
+
 	@PostMapping("/users/{userId}/updateAddress")
 	public String updateAddress(@PathVariable Long userId, Address address) {
 		userService.updateAddress(userId, address);

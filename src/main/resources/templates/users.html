@@ -66,6 +66,9 @@
                 <span th:text="${account.accountName}"></span>
             </a>
         </div>
+        <div th:if="${errorMessage}">
+    		<p th:text="${errorMessage}"></p>
+		</div>
         <hr/>
     </div>
 </body>

@@ -27,6 +27,11 @@ public class User {
 	private List<Account> accounts = new ArrayList<>();
 	private Address address;
 	
+	public void addAccount(Account account) {
+		this.accounts.add(account);
+		account.getUsers().add(this);
+	}
+	
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	public Long getUserId() {
 		return userId;

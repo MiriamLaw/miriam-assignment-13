@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -57,11 +59,11 @@ public class UserController {
 		Optional<User> userOpt = userService.findById(userId);
 		if (userOpt.isPresent()) {
 			User user = userOpt.get();
-			
+
 			if (user.getAddress() == null) {
 				user.setAddress(new Address());
 			}
-			
+
 			model.put("users", Arrays.asList(user));
 			model.put("user", user);
 			return "users";
@@ -69,14 +71,7 @@ public class UserController {
 			model.put("errorMessage", "User not found");
 			return "redirect:/users";
 		}
-		
-	}
-	
-	@GetMapping("/users/{userId}/acconts/createForm")
-	public String showCreateAccountForm(@PathVariable Long userId, Model model) {
-		model.addAttribute("account", new Account());
-		model.addAttribute("userId", userId);
-		return "account";
+
 	}
 
 	@PostMapping("/users/{userId}")
@@ -96,14 +91,34 @@ public class UserController {
 		userService.updateUser(userId, user);
 		return "redirect:/users/" + userId;
 	}
-	
-	@PostMapping("/users/{userId}/accounts")
-	public String createAccount(@PathVariable Long userId, @ModelAttribute("account") Account account, BindingResult result) {
-		if (result.hasErrors()) {
-			return "createAccountForm";
-		}
-		userService.addAccountToUser(userId, account);
-		return "redirect:/users/{userId}";
+
+	@GetMapping("/users/{userId}/accounts/create")
+	public String showCreateAccountForm(@PathVariable Long userId, Model model) {
+		model.addAttribute("account", new Account());
+	    model.addAttribute("userId", userId);
+	    return "account"; 
 	}
+
+	@PostMapping("/users/{userId}/accounts/create")
+	public String createAccountForUser(@PathVariable Long userId, @Valid @ModelAttribute("account") Account account, BindingResult result) {
+	    if (result.hasErrors()) {
+	        return "account";
+	    }
+	    userService.addAccountToUser(userId, account);
+	    return "redirect:/users/" + userId;
+	}
+
 	
+	@PostMapping("/users/{userId}/accounts/{accountId}")
+	public String updateAccountDetails(@PathVariable Long userId, @PathVariable Long accountId, @ModelAttribute("account") Account account, BindingResult result, Model model) {
+	    if (result.hasErrors()) {
+	        model.addAttribute("userId", userId);
+	        model.addAttribute("account", account); 
+	        return "account"; 
+	    }
+	    userService.createNewBankAccount(userId, account); 
+	    return "redirect:/users/" + userId + "/accounts/" + account.getAccountId();
+	}
+
+
 }

@@ -20,6 +20,11 @@ public class Account {
 	private List<Transaction> transactions = new ArrayList<>();
 	private List<User> users = new ArrayList<>();
 	
+	public void addUser(User user) {
+		this.users.add(user);
+		user.getAccounts().add(this);
+	}
+	
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	public Long getAccountId() {
 		return accountId;

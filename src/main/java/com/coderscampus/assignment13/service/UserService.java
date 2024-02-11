@@ -75,4 +75,16 @@ public class UserService {
 			return null;
 		}
 	}
+
+	public User createNewBankAccount(Long userId, Account newAccount) {
+		Optional<User> userOpt = findById(userId);
+		if (userOpt.isPresent()) {
+			User user = userOpt.get();
+			user.addAccount(newAccount);
+			return userRepo.save(user);
+		} else {
+			throw new RuntimeException("User not found with ID: " + userId);
+		}
+	}
+
 }

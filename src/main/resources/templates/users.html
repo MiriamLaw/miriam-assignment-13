@@ -58,7 +58,7 @@
 				th:text="${account.accountName}"></a><br />
 		</div>
 		<br />
-		<form th:action="@{/users/{userId}/accounts/createForm(userId=${user.userId})}" method="get">
+		<form th:action="@{/users/{userId}/accounts/create(userId=${userId})}" method="get">
 			<input type="submit" value="Create New Bank Account" />
 		</form>
 		<br />

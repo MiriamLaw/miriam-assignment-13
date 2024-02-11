@@ -99,7 +99,7 @@ public class UserController {
 	    return "account"; 
 	}
 
-	@PostMapping("/users/{userId}/accounts/create")
+	@PostMapping("/users/{userId}/accounts")
 	public String createAccountForUser(@PathVariable Long userId, @Valid @ModelAttribute("account") Account account, BindingResult result) {
 	    if (result.hasErrors()) {
 	        return "account";
@@ -108,6 +108,26 @@ public class UserController {
 	    return "redirect:/users/" + userId;
 	}
 
+	@GetMapping("/users/{userId}/accounts/{accountId}")
+	public String getAccountDetails(@PathVariable Long userId, @PathVariable Long accountId, Model model) {
+		 Optional<User> userOpt = userService.findById(userId);
+		 if (userOpt.isPresent()) {
+			 User user = userOpt.get();
+					 Account account = user.getAccounts().stream()
+					 .filter(a -> accountId.equals(a.getAccountId()))
+					 .findFirst()
+					 .orElseThrow(() -> new IllegalArgumentException("Invalid account ID"));
+			 
+			 model.addAttribute("userId", userId);
+			 model.addAttribute("account", account);
+			 model.addAttribute("accountName", account.getAccountName());
+			 
+			 return "account";
+		 } else {
+			 throw new IllegalArgumentException("Invalid user ID");
+		 }
+		
+	}
 	
 	@PostMapping("/users/{userId}/accounts/{accountId}")
 	public String updateAccountDetails(@PathVariable Long userId, @PathVariable Long accountId, @ModelAttribute("account") Account account, BindingResult result, Model model) {
@@ -116,8 +136,8 @@ public class UserController {
 	        model.addAttribute("account", account); 
 	        return "account"; 
 	    }
-	    userService.createNewBankAccount(userId, account); 
-	    return "redirect:/users/" + userId + "/accounts/" + account.getAccountId();
+	    userService.updateAccountForUser(userId, accountId, account); 
+	    return "redirect:/users/" + userId + "/accounts/" + accountId;
 	}
 
 

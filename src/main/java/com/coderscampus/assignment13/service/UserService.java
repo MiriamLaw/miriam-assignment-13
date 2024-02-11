@@ -87,4 +87,17 @@ public class UserService {
 		}
 	}
 
+	public void updateAccountForUser(Long userId, Long accountId, Account updatedAccount) {
+		User user = findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+		Account account = user.getAccounts().stream()
+				.filter(a -> a.getAccountId().equals(accountId))
+				.findFirst()
+				.orElseThrow(() -> new RuntimeException("Account not found"));
+		
+		account.setAccountName(updatedAccount.getAccountName());
+		
+		saveUser(user);
+
+	}
+
 }

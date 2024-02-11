@@ -54,8 +54,8 @@
 		<!-- Accounts Section -->
 		<h3>Accounts</h3>
 		<div th:each="account : ${user.accounts}">
-			<a th:href="@{/accounts/{accountId}(accountId=${account.accountId})}"
-				th:text="${account.accountName}"></a><br />
+			<a th:href="@{/users/{userId}/accounts/{accountId}(userId=${user.userId}, accountId=${account.accountId})}" 
+				th:text="${account.accountName}">Account Name></a><br />
 		</div>
 		<br />
 		<form th:action="@{/users/{userId}/accounts/create(userId=${userId})}" method="get">

@@ -45,24 +45,32 @@ public class UserService {
 		userRepo.deleteById(userId);
 	}
 
-	public User updateAddress(Long userId, Address address) {
+	public User updateUser(Long userId, User updatedUser) {
 		Optional<User> userOpt = findById(userId);
 		if (userOpt.isPresent()) {
-			User user = userOpt.get();
-			Address userAddress = user.getAddress();
-			if (userAddress == null) {
-				userAddress = new Address();
-				user.setAddress(userAddress);
-				userAddress.setUser(user);
-			}
+			User existingUser = userOpt.get();
+			existingUser.setUsername(updatedUser.getUsername());
+			existingUser.setPassword(updatedUser.getPassword());
+			existingUser.setName(updatedUser.getName());
 
-			userAddress.setAddressLine1(address.getAddressLine1());
-			userAddress.setAddressLine2(address.getAddressLine2());
-			userAddress.setCity(address.getCity());
-			userAddress.setCountry(address.getCountry());
-			userAddress.setRegion(address.getRegion());
-			userAddress.setZipCode(address.getZipCode());
-			return userRepo.save(user);
+			Address updatedAddress = updatedUser.getAddress();
+			if (updatedAddress != null) {
+				Address existingAddress = existingUser.getAddress() != null ? existingUser.getAddress() : new Address();
+				existingAddress.setAddressLine1(updatedAddress.getAddressLine1());
+				existingAddress.setAddressLine2(updatedAddress.getAddressLine2());
+				existingAddress.setCity(updatedAddress.getCity());
+				existingAddress.setCountry(updatedAddress.getCountry());
+				existingAddress.setRegion(updatedAddress.getRegion());
+				existingAddress.setZipCode(updatedAddress.getZipCode());
+
+				if (existingUser.getAddress() == null) {
+					existingUser.setAddress(existingAddress);
+					existingAddress.setUser(existingUser);
+
+				}
+			}
+			return userRepo.save(existingUser);
+
 		} else {
 			return null;
 		}

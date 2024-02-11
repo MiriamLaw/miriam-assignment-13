@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -53,6 +54,11 @@ public class UserController {
 		Optional<User> userOpt = userService.findById(userId);
 		if (userOpt.isPresent()) {
 			User user = userOpt.get();
+			
+			if (user.getAddress() == null) {
+				user.setAddress(new Address());
+			}
+			
 			model.put("users", Arrays.asList(user));
 			model.put("user", user);
 			return "users";
@@ -74,9 +80,10 @@ public class UserController {
 		return "redirect:/users";
 	}
 
-	@PostMapping("/users/{userId}/updateAddress")
-	public String updateAddress(@PathVariable Long userId, Address address) {
-		userService.updateAddress(userId, address);
+	@PostMapping("/users/{userId}/updateUser")
+	public String updateUserAccount(@PathVariable Long userId, @ModelAttribute User user) {
+		userService.updateUser(userId, user);
 		return "redirect:/users/" + userId;
 	}
+	
 }

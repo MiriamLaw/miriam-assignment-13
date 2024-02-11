@@ -6,12 +6,15 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.coderscampus.assignment13.domain.Account;
 import com.coderscampus.assignment13.domain.Address;
 import com.coderscampus.assignment13.domain.User;
 import com.coderscampus.assignment13.service.UserService;
@@ -66,6 +69,14 @@ public class UserController {
 			model.put("errorMessage", "User not found");
 			return "redirect:/users";
 		}
+		
+	}
+	
+	@GetMapping("/users/{userId}/acconts/createForm")
+	public String showCreateAccountForm(@PathVariable Long userId, Model model) {
+		model.addAttribute("account", new Account());
+		model.addAttribute("userId", userId);
+		return "account";
 	}
 
 	@PostMapping("/users/{userId}")
@@ -84,6 +95,15 @@ public class UserController {
 	public String updateUserAccount(@PathVariable Long userId, @ModelAttribute User user) {
 		userService.updateUser(userId, user);
 		return "redirect:/users/" + userId;
+	}
+	
+	@PostMapping("/users/{userId}/accounts")
+	public String createAccount(@PathVariable Long userId, @ModelAttribute("account") Account account, BindingResult result) {
+		if (result.hasErrors()) {
+			return "createAccountForm";
+		}
+		userService.addAccountToUser(userId, account);
+		return "redirect:/users/{userId}";
 	}
 	
 }

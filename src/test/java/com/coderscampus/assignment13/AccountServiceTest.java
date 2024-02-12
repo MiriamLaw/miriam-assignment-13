@@ -22,7 +22,7 @@ import com.coderscampus.assignment13.service.AccountService;
 import com.coderscampus.assignment13.service.UserService;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceTest {
+class AccountServiceTest {
 	
 	@Mock
 	private UserRepository userRepository;
@@ -31,7 +31,7 @@ public class UserServiceTest {
 	private AccountService accountService;
 	
 	@InjectMocks
-	private UserService userService;
+	private AccountService accountServic;
 	
 	@Test
 	public void testAddAccountToUser() {

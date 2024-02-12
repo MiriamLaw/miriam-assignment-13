@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import com.coderscampus.assignment13.domain.Account;
 import com.coderscampus.assignment13.domain.Address;
 import com.coderscampus.assignment13.domain.User;
+import com.coderscampus.assignment13.service.AccountService;
 import com.coderscampus.assignment13.service.UserService;
 
 @Controller
@@ -26,6 +27,9 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private AccountService accountService;
 
 	@GetMapping("/register")
 	public String getCreateUser(ModelMap model) {
@@ -95,50 +99,49 @@ public class UserController {
 	@GetMapping("/users/{userId}/accounts/create")
 	public String showCreateAccountForm(@PathVariable Long userId, Model model) {
 		model.addAttribute("account", new Account());
-	    model.addAttribute("userId", userId);
-	    return "account"; 
+		model.addAttribute("userId", userId);
+		return "account";
 	}
 
 	@PostMapping("/users/{userId}/accounts")
-	public String createAccountForUser(@PathVariable Long userId, @Valid @ModelAttribute("account") Account account, BindingResult result) {
-	    if (result.hasErrors()) {
-	        return "account";
-	    }
-	    userService.addAccountToUser(userId, account);
-	    return "redirect:/users/" + userId;
+	public String createAccountForUser(@PathVariable Long userId, @Valid @ModelAttribute("account") Account account,
+			BindingResult result) {
+		if (result.hasErrors()) {
+			return "account";
+		}
+		accountService.addAccountToUser(userId, account);
+		return "redirect:/users/" + userId;
 	}
 
 	@GetMapping("/users/{userId}/accounts/{accountId}")
 	public String getAccountDetails(@PathVariable Long userId, @PathVariable Long accountId, Model model) {
-		 Optional<User> userOpt = userService.findById(userId);
-		 if (userOpt.isPresent()) {
-			 User user = userOpt.get();
-					 Account account = user.getAccounts().stream()
-					 .filter(a -> accountId.equals(a.getAccountId()))
-					 .findFirst()
-					 .orElseThrow(() -> new IllegalArgumentException("Invalid account ID"));
-			 
-			 model.addAttribute("userId", userId);
-			 model.addAttribute("account", account);
-			 model.addAttribute("accountName", account.getAccountName());
-			 
-			 return "account";
-		 } else {
-			 throw new IllegalArgumentException("Invalid user ID");
-		 }
-		
-	}
-	
-	@PostMapping("/users/{userId}/accounts/{accountId}")
-	public String updateAccountDetails(@PathVariable Long userId, @PathVariable Long accountId, @ModelAttribute("account") Account account, BindingResult result, Model model) {
-	    if (result.hasErrors()) {
-	        model.addAttribute("userId", userId);
-	        model.addAttribute("account", account); 
-	        return "account"; 
-	    }
-	    userService.updateAccountForUser(userId, accountId, account); 
-	    return "redirect:/users/" + userId + "/accounts/" + accountId;
+		Optional<User> userOpt = userService.findById(userId);
+		if (userOpt.isPresent()) {
+			User user = userOpt.get();
+			Account account = user.getAccounts().stream().filter(a -> accountId.equals(a.getAccountId())).findFirst()
+					.orElseThrow(() -> new IllegalArgumentException("Invalid account ID"));
+
+			model.addAttribute("userId", userId);
+			model.addAttribute("account", account);
+			model.addAttribute("accountName", account.getAccountName());
+
+			return "account";
+		} else {
+			throw new IllegalArgumentException("Invalid user ID");
+		}
+
 	}
 
+	@PostMapping("/users/{userId}/accounts/{accountId}")
+	public String updateAccountDetails(@PathVariable Long userId, @PathVariable Long accountId,
+			@ModelAttribute("account") Account account, BindingResult result, Model model) {
+		if (result.hasErrors()) {
+			model.addAttribute("userId", userId);
+			model.addAttribute("account", account);
+			return "account";
+		}
+		accountService.updateAccountForUser(userId, accountId, account);
+		return "redirect:/users/" + userId + "/accounts/" + accountId;
+	}
 
 }

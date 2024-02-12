@@ -12,12 +12,10 @@ import com.coderscampus.assignment13.domain.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-	
-	@Query("select u from User u"
-		+ " left join fetch u.accounts"
-		+ " left join fetch u.address")
+
+	@Query("select u from User u" + " left join fetch u.accounts" + " left join fetch u.address")
 	Set<User> findAllUsersWithAccountsAndAddresses();
-	
+
 	@Query("select u from User u left join fetch u.accounts left join fetch u.address where u.userId = :userId")
 	Optional<User> findByIdWithAccountsAndAddress(@Param("userId") Long userId);
 }

@@ -6,7 +6,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.coderscampus.assignment13.domain.Account;
 import com.coderscampus.assignment13.domain.Address;
 import com.coderscampus.assignment13.domain.User;
 import com.coderscampus.assignment13.repository.UserRepository;
@@ -27,18 +26,6 @@ public class UserService {
 
 	public User saveUser(User user) {
 		return userRepo.save(user);
-	}
-
-	public Optional<User> addAccountToUser(Long userId, Account newAccount) {
-		Optional<User> userOpt = findById(userId);
-		if (userOpt.isPresent()) {
-			User user = userOpt.get();
-			user.getAccounts().add(newAccount);
-			newAccount.getUsers().add(user);
-			return Optional.of(saveUser(user));
-		}
-		return Optional.empty();
-
 	}
 
 	public void delete(Long userId) {
@@ -74,30 +61,6 @@ public class UserService {
 		} else {
 			return null;
 		}
-	}
-
-	public User createNewBankAccount(Long userId, Account newAccount) {
-		Optional<User> userOpt = findById(userId);
-		if (userOpt.isPresent()) {
-			User user = userOpt.get();
-			user.addAccount(newAccount);
-			return userRepo.save(user);
-		} else {
-			throw new RuntimeException("User not found with ID: " + userId);
-		}
-	}
-
-	public void updateAccountForUser(Long userId, Long accountId, Account updatedAccount) {
-		User user = findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-		Account account = user.getAccounts().stream()
-				.filter(a -> a.getAccountId().equals(accountId))
-				.findFirst()
-				.orElseThrow(() -> new RuntimeException("Account not found"));
-		
-		account.setAccountName(updatedAccount.getAccountName());
-		
-		saveUser(user);
-
 	}
 
 }

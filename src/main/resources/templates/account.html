@@ -8,8 +8,7 @@
 		Details</h1>
 	<h1 th:unless="${accountName}">Create New Bank Account</h1>
 	<form
-		th:action="@{/users/{userId}/accounts/{accountId}(userId=${userId}, accountId=${account.accountId})}"
-		method="post">
+		th:action="@{/users/{userId}/accounts(userId=${userId})}" method="post">
 		<div>
 			<label for="accountName">Account Name:</label> <input type="text"
 				id="accountName" th:value="${account.accountName}"

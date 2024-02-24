@@ -37,7 +37,9 @@ public class UserService {
 		if (userOpt.isPresent()) {
 			User existingUser = userOpt.get();
 			existingUser.setUsername(updatedUser.getUsername());
-			existingUser.setPassword(updatedUser.getPassword());
+			if (updatedUser.getPassword() != null && !updatedUser.getPassword().trim().isEmpty()) {
+				existingUser.setPassword(updatedUser.getPassword());
+			}
 			existingUser.setName(updatedUser.getName());
 
 			Address updatedAddress = updatedUser.getAddress();
